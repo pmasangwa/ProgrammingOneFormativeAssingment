@@ -1,22 +1,18 @@
-
 class Assignment:
-    """
-    Base class representing a general academic assignment.
-    Encapsulates core attributes common to all assignment types.
-    """
+    # This is the main blueprint for any school task. 
+    # It stores basic details like the subject, name, score, and when it is due.
     def __init__(self, subject, title, score, max_score, due_date, atype):
+        # Sets up a new assignment with all its starting details.
         self.subject = subject.lower().strip()
         self.title = title.strip()
         self.score = float(score)
         self.max_score = float(max_score)
-        self.due_date = due_date.strip()  # Expected format: YYYY-MM-DD
-        self.type = atype.lower().strip() # 'homework' or 'exam'
+        self.due_date = due_date.strip() 
+        self.type = atype.lower().strip() 
 
     def display_details(self):
-        """
-        Calculates percentage and returns a formatted string containing 
-        assignment details for display in the terminal.
-        """
+        # Turns the assignment's details and grade percentage into a neat sentence 
+        # so we can easily print it out for the user to read.
         percentage = (self.score / self.max_score) * 100 if self.max_score > 0 else 0
         return (f"Subject: {self.subject.title()} | Title: {self.title} | "
                 f"Type: {self.type.title()} | Score: {self.score}/{self.max_score} "
@@ -24,38 +20,33 @@ class Assignment:
 
 
 class Homework(Assignment):
-    """
-    Subclass representing a homework assignment, extending the base Assignment class 
-    using inheritance and the super() constructor.
-    """
+    # A specific type of assignment just for homework. 
+    # It uses the main Assignment blueprint above to set itself up.
     def __init__(self, subject, title, score, max_score, due_date):
         super().__init__(subject, title, score, max_score, due_date, "homework")
 
 
 class Exam(Assignment):
-    """
-    Subclass representing an examination, extending the base Assignment class 
-    using inheritance and the super() constructor.
-    """
+    # A specific type of assignment just for exams. 
+    # Like homework, it also borrows the main Assignment blueprint.
     def __init__(self, subject, title, score, max_score, due_date):
         super().__init__(subject, title, score, max_score, due_date, "exam")
 
 
 class GradeTracker:
-    """
-    Manager class responsible for maintaining the collection of assignments 
-    and implementing operational methods (add, list, filter, summarize).
-    """
+    # This is the main brain of our app! It holds all our assignments in a list 
+    # and lets us do things like view, filter, or summarize them.
     def __init__(self):
-        # Collection to store assignment objects in memory during the session
+        # Creates an empty digital folder (a list) to hold all our assignments.
         self.assignments = []
 
     def add_assignment(self, assignment):
-        """Appends a validated Assignment object to the internal collection list."""
+        # Takes a new assignment and drops it into our digital folder.
         self.assignments.append(assignment)
 
     def list_assignments(self):
-        """Displays all recorded assignments in a structured format."""
+        # Looks through our folder and prints out every assignment we've saved so far. 
+        # If the folder is empty, it tells the user.
         if not self.assignments:
             print("\n[Notice] No assignments recorded in the system currently.")
             return
@@ -65,9 +56,8 @@ class GradeTracker:
             print(f"{index}. {assignment.display_details()}")
 
     def filter_assignments(self, criteria_type, criteria_value):
-        """
-        Filters assignments dynamically based on type, subject, or due date month.
-        """
+        # Searches our folder for specific assignments—like all 'math' work 
+        # or only 'exams'—and shows just those results.
         if not self.assignments:
             print("\n[Notice] No assignments available to filter.")
             return
@@ -80,7 +70,6 @@ class GradeTracker:
         elif criteria_type == "subject":
             filtered = [a for a in self.assignments if a.subject == criteria_value]
         elif criteria_type == "month":
-            # Matches assignments where due_date string starts with YYYY-MM
             filtered = [a for a in self.assignments if a.due_date.startswith(criteria_value)]
 
         if not filtered:
@@ -92,19 +81,22 @@ class GradeTracker:
             print(f"{index}. {assignment.display_details()}")
 
     def show_summary(self):
-        """
-        Computes and outputs overall grade percentage, per-subject breakdowns, 
-        and extreme scoring entries (highest and lowest).
-        """
+        # Crunches the numbers to show our overall grade, how we are doing 
+        # in each subject, and our very best and worst assignments.
         if not self.assignments:
             print("\n[Notice] No assignments available to generate a summary report.")
             return
 
+        # STATISTICAL ANALYSIS: Overall Grade
+        # Adds up all our earned points and divides by the total possible points 
+        # to calculate our final, overall big-picture grade.
         total_score = sum(a.score for a in self.assignments)
         total_max_score = sum(a.max_score for a in self.assignments)
         overall_percentage = (total_score / total_max_score) * 100 if total_max_score > 0 else 0
 
-        # Aggregating metrics per subject using a dictionary
+        # STATISTICAL ANALYSIS: Subject Averages
+        # Groups our scores together by subject (like Math or History) so we can 
+        # see our average grade for each specific class.
         subjects = {}
         for a in self.assignments:
             if a.subject not in subjects:
@@ -113,7 +105,9 @@ class GradeTracker:
             subjects[a.subject]["max_score"] += a.max_score
             subjects[a.subject]["count"] += 1
 
-        # Determining highest and lowest assignments based on percentage ratio
+        # STATISTICAL ANALYSIS: Highest and Lowest Scores
+        # Looks at the percentage of every single assignment to find 
+        # the absolute best and worst scores we got.
         highest = max(self.assignments, key=lambda x: (x.score / x.max_score if x.max_score > 0 else 0))
         lowest = min(self.assignments, key=lambda x: (x.score / x.max_score if x.max_score > 0 else 0))
 
@@ -133,10 +127,8 @@ class GradeTracker:
 
 
 def get_validated_float(prompt, min_val=None, max_val=None):
-    """
-    Input validation function, this is to ensure user provides a valid floating-point number 
-    within specified operational and functional boundaries for the program.
-    """
+    # A helper tool that makes sure the user types a real number. 
+    # If they type words or a number that's too high or low, it asks them to try again.
     while True:
         try:
             value = float(input(prompt))
@@ -152,7 +144,8 @@ def get_validated_float(prompt, min_val=None, max_val=None):
 
 
 def get_validated_date(prompt):
-    """This is to validates that the entered date string is not empty."""
+    # A helper tool that makes sure the user actually types a date 
+    # and doesn't just hit 'enter' leaving it completely blank.
     while True:
         date_str = input(prompt).strip()
         if date_str:
@@ -161,14 +154,12 @@ def get_validated_date(prompt):
 
 
 def main():
-    """
-    Main execution loop controlling the command-line interface menu 
-    and routing user decisions to appropriate methods.
-    """
+    # The main loop that runs our app! It shows the menu on the screen, 
+    # waits for the user to pick an option, and then tells the GradeTracker what to do.
     tracker = GradeTracker()
 
     while True:
-        print("   STUDENT GRADE TRACKER")
+        print("\n   STUDENT GRADE TRACKER")
         print("1) Add homework")
         print("2) Add exam")
         print("3) List assignments")
