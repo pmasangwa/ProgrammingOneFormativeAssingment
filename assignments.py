@@ -1,117 +1,169 @@
+# This is my main class to hold all the data for an assignment to be created.
+
 class Assignment:
-    # This is the main blueprint for any school task. 
-    # It stores basic details like the subject, name, score, and when it is due.
+    # This runs everytime when I create a new assignment object.
     def __init__(self, subject, title, score, max_score, due_date, atype):
-        # Sets up a new assignment with all its starting details.
-        self.subject = subject.lower().strip()
-        self.title = title.strip()
+        # I'm saving all the variables passed in to the object
+        self.subject = subject.lower()
+        self.title = title
+        # Making sure scores are decimals so the math works later
         self.score = float(score)
         self.max_score = float(max_score)
-        self.due_date = due_date.strip() 
-        self.type = atype.lower().strip() 
+        self.due_date = due_date
+        self.type = atype.lower()
 
+    # A function to print out the assignment details in one line
     def display_details(self):
-        # Turns the assignment's details and grade percentage into a neat sentence 
-        # so we can easily print it out for the user to read.
-        percentage = (self.score / self.max_score) * 100 if self.max_score > 0 else 0
-        return (f"Subject: {self.subject.title()} | Title: {self.title} | "
-                f"Type: {self.type.title()} | Score: {self.score}/{self.max_score} "
-                f"({percentage:.2f}%) | Due Date: {self.due_date}")
+        # This is to prevent division by zero if any max_score is 0 by mistake
+        if self.max_score > 0:
+            percentage = (self.score / self.max_score) * 100
+        else:
+            percentage = 0
+            
+        # I just added strings together because it's easier to read and follow than using f-strings or .format().
+        return "Subject: " + self.subject + " | Title: " + self.title + " | Type: " + self.type + " | Score: " + str(self.score) + "/" + str(self.max_score) + " (" + str(round(percentage, 2)) + "%) | Due: " + self.due_date
 
+# I made separate classes for Homework and Exam.
+# They inherit from Assignment so I don't have to rewrite the __init__ code all over again.
 class Homework(Assignment):
-    # A specific type of assignment just for homework. 
-    # It uses the main Assignment blueprint above to set itself up.
     def __init__(self, subject, title, score, max_score, due_date):
+        # super() calls the Assignment __init__ and passes "homework" as the type
         super().__init__(subject, title, score, max_score, due_date, "homework")
 
 class Exam(Assignment):
-    # A specific type of assignment just for exams. 
-    # Like homework, it also borrows the main Assignment blueprint.
     def __init__(self, subject, title, score, max_score, due_date):
+        # same thing is done here but passing "exam"
         super().__init__(subject, title, score, max_score, due_date, "exam")
 
+# This is the class that manages all my grades in one place
 class GradeTracker:
-    # This is the main brain of our app! It holds all our assignments in a list 
-    # and lets us do things like view, filter, or summarize them.
     def __init__(self):
-        # Creates an empty digital folder (a list) to hold all our assignments.
+        # Just an empty list to hold my objects
         self.assignments = []
 
     def add_assignment(self, assignment):
-        # Takes a new assignment and drops it into our digital folder.
+        # add the new assignment to the end of the list
         self.assignments.append(assignment)
 
     def list_assignments(self):
-        # Looks through our folder and prints out every assignment we've saved so far. 
-        # If the folder is empty, it tells the user.
-        if not self.assignments:
-            print("\n[Notice] No assignments recorded in the system currently.")
-            return
+        # check if the list is empty first
+        if len(self.assignments) == 0:
+            print("No assignments saved yet.")
+            return # stops the function here
         
         print("\n--- Recorded Assignments ---")
-        for index, assignment in enumerate(self.assignments, start=1):
-            print(f"{index}. {assignment.display_details()}")
+        # I used a count variable to number my list
+        count = 1
+        for item in self.assignments:
+            print(str(count) + ". " + item.display_details())
+            count = count + 1
 
     def filter_assignments(self, criteria_type, criteria_value):
-        # Searches our folder for specific assignments—like all 'math' work 
-        # or only 'exams'—and shows just those results.
-        if not self.assignments:
-            print("\n[Notice] No assignments available to filter.")
+        if len(self.assignments) == 0:
+            print("Nothing to filter.")
             return
 
-        filtered = []
-        criteria_value = criteria_value.lower().strip()
+        # Empty list to hold the ones that match what we are looking for
+        filtered_list = []
+        criteria_value = criteria_value.lower()
 
+        # Branch 1: If they want to search by type (homework or exam)
         if criteria_type == "type":
-            filtered = [a for a in self.assignments if a.type == criteria_value]
+            for item in self.assignments:
+                if item.type == criteria_value:
+                    filtered_list.append(item)
+                    
+        # Branch 2: If they want to search by a specific subject
         elif criteria_type == "subject":
-            filtered = [a for a in self.assignments if a.subject == criteria_value]
+            for item in self.assignments:
+                if item.subject == criteria_value:
+                    filtered_list.append(item)
+                    
+        # Branch 3: If they want to search by a date/month
         elif criteria_type == "month":
-            filtered = [a for a in self.assignments if a.due_date.startswith(criteria_value)]
+            for item in self.assignments:
+                # check if the start of the date matches the user's input
+                if item.due_date.startswith(criteria_value):
+                    filtered_list.append(item)
 
-        if not filtered:
-            print(f"\n[Notice] No assignments found matching {criteria_type}: '{criteria_value}'.")
-            return
-
-        print(f"\n--- Filtered Assignments ({criteria_type}: {criteria_value}) ---")
-        for index, assignment in enumerate(filtered, start=1):
-            print(f"{index}. {assignment.display_details()}")
+        # See if we actually found anything
+        if len(filtered_list) == 0:
+            print("Couldn't find anything matching that.")
+        else:
+            print("\n--- Filtered Results ---")
+            count = 1
+            for item in filtered_list:
+                print(str(count) + ". " + item.display_details())
+                count = count + 1
 
     def show_summary(self):
-        # Crunches the numbers to show our overall grade, how we are doing 
-        # in each subject, and our very best and worst assignments.
-        if not self.assignments:
-            print("\n[Notice] No assignments available to generate a summary report.")
+        # Check if we have grades to summarize
+        if len(self.assignments) == 0:
+            print("No grades to summarize.")
             return
 
-        # STATISTICAL ANALYSIS: Overall Grade
-        total_score = sum(a.score for a in self.assignments)
-        total_max_score = sum(a.max_score for a in self.assignments)
-        overall_percentage = (total_score / total_max_score) * 100 if total_max_score > 0 else 0
-
-        # STATISTICAL ANALYSIS: Subject Averages
-        subjects = {}
-        for a in self.assignments:
-            if a.subject not in subjects:
-                subjects[a.subject] = {"score": 0.0, "max_score": 0.0, "count": 0}
-            subjects[a.subject]["score"] += a.score
-            subjects[a.subject]["max_score"] += a.max_score
-            subjects[a.subject]["count"] += 1
-
-        # STATISTICAL ANALYSIS: Highest and Lowest Scores
-        highest = max(self.assignments, key=lambda x: (x.score / x.max_score if x.max_score > 0 else 0))
-        lowest = min(self.assignments, key=lambda x: (x.score / x.max_score if x.max_score > 0 else 0))
-
-        print("\n--- Grade Summary Report ---")
-        print(f"Total Assignments Recorded: {len(self.assignments)}")
-        print(f"Overall Cumulative Grade Percentage: {overall_percentage:.2f}%")
+        # 1. Figure out the overall grade
+        total_score = 0
+        total_max = 0
         
-        print("\nPer-Subject Performance Averages:")
-        for subj, data in subjects.items():
-            subj_pct = (data["score"] / data["max_score"]) * 100 if data["max_score"] > 0 else 0
-            print(f"  - {subj.title()}: {subj_pct:.2f}% ({data['count']} assignments tracked)")
+        # Looping through everything and adding1 up the scores
+        for item in self.assignments:
+            total_score = total_score + item.score
+            total_max = total_max + item.max_score
+            
+        if total_max > 0:
+            overall_percent = (total_score / total_max) * 100
+        else:
+            overall_percent = 0
+            
+        print("\n--- Grade Summary ---")
+        print("Total Assignments: " + str(len(self.assignments)))
+        print("Overall Grade: " + str(round(overall_percent, 2)) + "%")
 
-        print(f"\nHighest Scoring Assignment: {highest.title} ({highest.subject.title()}) - "
-              f"{(highest.score / highest.max_score) * 100:.2f}%")
-        print(f"Lowest Scoring Assignment: {lowest.title} ({lowest.subject.title()}) - "
-              f"{(lowest.score / lowest.max_score) * 100:.2f}%")
+        # 2. Figure out the best and worst assignment
+        # I set the highest and lowest to the first item to start comparing
+        highest_item = self.assignments[0]
+        lowest_item = self.assignments[0]
+        
+        highest_percent = (highest_item.score / highest_item.max_score) * 100
+        lowest_percent = (lowest_item.score / lowest_item.max_score) * 100
+        
+        # Loop through everything to see if there is a higher or lower score
+        for item in self.assignments:
+            if item.max_score > 0:
+                item_percent = (item.score / item.max_score) * 100
+                
+                # Check if this item is the new highest
+                if item_percent > highest_percent:
+                    highest_percent = item_percent
+                    highest_item = item
+                    
+                # Check if this item is the new lowest
+                if item_percent < lowest_percent:
+                    lowest_percent = item_percent
+                    lowest_item = item
+
+        print("\nBest Assignment: " + highest_item.title + " - " + str(round(highest_percent, 2)) + "%")
+        print("Worst Assignment: " + lowest_item.title + " - " + str(round(lowest_percent, 2)) + "%")
+        
+        # 3. Figure out grades per subject
+        print("\nSubject Averages:")
+        # Two dictionaries: one to hold the points earned, one for the total possible points
+        subject_scores = {}
+        subject_max = {}
+        
+        for item in self.assignments:
+            # If we haven't seen this subject yet, add it to the dictionaries
+            if item.subject not in subject_scores:
+                subject_scores[item.subject] = 0
+                subject_max[item.subject] = 0
+            
+            # Add the current item's scores to that subject's total
+            subject_scores[item.subject] = subject_scores[item.subject] + item.score
+            subject_max[item.subject] = subject_max[item.subject] + item.max_score
+            
+        # Loop through the dictionary we just built to print the results
+        for subj in subject_scores:
+            if subject_max[subj] > 0:
+                subj_grade = (subject_scores[subj] / subject_max[subj]) * 100
+                print(" - " + subj + ": " + str(round(subj_grade, 2)) + "%")

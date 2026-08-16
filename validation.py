@@ -1,24 +1,44 @@
+# A function to make sure the user types a real number that are required to prevent errors when running the program. 
+# If they type words or a number that is too high or low, it asks them to try again.
 def get_validated_float(prompt, min_val=None, max_val=None):
-    # A helper tool that makes sure the user types a real number. 
-    # If they type words or a number that's too high or low, it asks them to try again.
+    # Looping is done forever until they type a good or valid number
     while True:
         try:
-            value = float(input(prompt))
-            if min_val is not None and value < min_val:
-                print(f"Error: Value must be equal to or greater than {min_val}.")
+            # Get the input and try to turn it into a decimal number
+            user_input = input(prompt)
+            value = float(user_input)
+            
+            # Branch 1: Check if the number is too small
+            # (Checking if min_val != None just makes sure a minimum was actually set)
+            if min_val != None and value < min_val:
+                print("Error: The number needs to be at least " + str(min_val) + ".")
+                # The continue keyword skips the rest of the loop and starts over at the top
                 continue
-            if max_val is not None and value > max_val:
-                print(f"Error: Achieved score cannot exceed maximum score ({max_val}).")
+                
+            # Branch 2: Check if the number is too big
+            if max_val != None and value > max_val:
+                print("Error: The score can't be bigger than the max score (" + str(max_val) + ").")
                 continue
+                
+            # If the number passes all the checks, give it back to the program
             return value
+            
+        # Branch 3: This catches the crash if float() fails (like if they typed "hello")
         except ValueError:
-            print("Error: Invalid numeric format. Please enter a valid number.")
+            print("Error: That is not a valid number. Please try again.")
 
+# A function to make sure the user types something for the date
+# so they don't just hit enter and leave it empty.
 def get_validated_date(prompt):
-    # A helper tool that makes sure the user actually types a date 
-    # and doesn't just hit 'enter' leaving it completely blank.
+    # Also, looping is done until they type something valid
     while True:
+        # .strip() removes any empty spaces they accidentally typed at the start or end
         date_str = input(prompt).strip()
-        if date_str:
+        
+        # Branch 1: Check if the string actually has letters or numbers in it
+        if len(date_str) > 0:
             return date_str
-        print("Error: Date field cannot be left blank. Please use format YYYY-MM-DD.")
+            
+        # Branch 2: If the length is 0, it means they just pressed enter
+        else:
+            print("Error: You can't leave this blank. Please type a date (YYYY-MM-DD).")
