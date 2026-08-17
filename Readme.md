@@ -19,19 +19,19 @@ To execute the program locally, ensure that a compatible Python 3 interpreter is
    `python main.py`
 
 # Error Prevention Strategies
-To ensure optimal operation and avoid runtime exceptions, users must adhere to the following input constraints enforced by the validation logic [cite: 1]:
+To ensure optimal operation and avoid runtime exceptions, users must adhere to the following input constraints enforced by the validation logic:
 1. Numeric Constraints: When prompted for scores, input valid floating point or integer values. The system will reject scores that exceed the specified maximum possible score and scores below the minimum possible score.
 2. Date Formatting: The application strictly requires dates to be entered sequentially as Year, Month, and Day (YYYY-MM-DD) format. Providing empty strings will result in an error prompt.
 3. Menu Navigation: Only select integer values ranging from 0 to 5 during main menu navigation.
 
 # Menu Structure
 The application utilizes a linear numerical menu system:
-* Option 1: Add new homework. Requires subject, title, maximum score, achieved score, and due date [cite: 1].
-* Option 2: Add new exam. Requires identical parameters to the homework function [cite: 1].
-* Option 3: List assignments. Displays all stored records sequentially with calculated percentages [cite: 1].
-* Option 4: Filter assignments. Provides a secondary prompt to query records by type, subject, or month [cite: 1].
-* Option 5: Show summary. Generates the statistical report encompassing total grades and subject averages [cite: 1].
-* Option 0: Exit. Terminates the session and clears all stored memory collections [cite: 1].
+* Option 1: Add new homework. Requires subject, title, maximum score, achieved score, and due date 
+* Option 2: Add new exam. Requires identical parameters to the homework function 
+* Option 3: List assignments. Displays all stored records sequentially with calculated percentages 
+* Option 4: Filter assignments. Provides a secondary prompt to query records by type, subject, or month 
+* Option 5: Show summary. Generates the statistical report encompassing total grades and subject averages 
+* Option 0: Exit. Terminates the session and clears all stored memory collections 
 
 ## Sample Interaction
 STUDENT GRADE TRACKER
